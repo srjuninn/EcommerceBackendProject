@@ -20,7 +20,7 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
+//  POST
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userReq) {
         UserResponse userRes = userService.createUser(userReq);
