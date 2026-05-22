@@ -1,6 +1,5 @@
 package com.project.ecommerce.requests;
 
-import com.project.ecommerce.enums.RolesEnum;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
