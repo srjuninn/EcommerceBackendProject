@@ -4,12 +4,12 @@ import com.project.ecommerce.requests.UserRequest;
 import com.project.ecommerce.responses.UserResponse;
 import com.project.ecommerce.services.UserService;
 import jakarta.validation.Valid;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.net.URI;
 
 @RestController
@@ -17,13 +17,19 @@ import java.net.URI;
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService){
         this.userService = userService;
     }
 //  POST
-    @PostMapping
-    public ResponseEntity<UserResponse> createUser(@Valid @RequestBody UserRequest userReq) {
-        UserResponse userRes = userService.createUser(userReq);
+    @PostMapping(consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> createUser(
+            @Valid
+            @RequestParam String name,
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestParam MultipartFile photo) throws IOException  {
+        UserRequest userReq = new UserRequest(name, email, password, null);
+        UserResponse userRes = userService.createUser(userReq, photo);
         URI location = URI.create("/users/" + userRes.id());
         return ResponseEntity.created(location).body(userRes);
 
