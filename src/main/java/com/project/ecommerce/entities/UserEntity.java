@@ -20,11 +20,13 @@ public class UserEntity {
     private String password;
     @Enumerated(EnumType.STRING)
     private RolesEnum role;
+    private String photo;
 
-    public UserEntity(String name, String email, String password, RolesEnum role) {
+    public UserEntity(String name, String email, String password, RolesEnum role, String photo) {
         this.name = name;
         this.email = email;
         this.password = password;
         this.role = role;
+        this.photo = photo;
     }
 }
