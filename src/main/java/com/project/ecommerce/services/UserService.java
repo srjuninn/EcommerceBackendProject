@@ -8,29 +8,37 @@ import com.project.ecommerce.responses.UserResponse;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final PhotoService photoService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, PhotoService photoService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.photoService = photoService;
     }
 
     //    Método pra criar o usuário
-    public UserResponse createUser(UserRequest userReq) {
+    public UserResponse createUser(UserRequest userReq, MultipartFile photo)throws IOException {
         if (userReq == null) {
             throw new IllegalArgumentException("os dados inseridos são inválidos");
         }
         if (userRepository.findByEmail(userReq.email()).isPresent()) {
             throw new DuplicateKeyException("já existe um usuário com esse email cadastrado");
         }
-        UserEntity newUser = new UserEntity(userReq.name(), userReq.email(), passwordEncoder.encode(userReq.password()), RolesEnum.ROLE_USER);
+        String pathPhoto = photoService.savePhoto(photo);
+
+
+        UserEntity newUser = new UserEntity(userReq.name(), userReq.email(), passwordEncoder.encode(userReq.password()), RolesEnum.ROLE_USER, userReq.photo());
 
         userRepository.save(newUser);
 
-        return new UserResponse(newUser.getId(), newUser.getName(), newUser.getEmail(), newUser.getRole());
+        return new UserResponse(newUser.getId(), newUser.getName(), newUser.getEmail());
     }
 }
