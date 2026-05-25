@@ -19,39 +19,51 @@ import java.util.UUID;
 public class UserController {
     private final UserService userService;
 
-    public UserController(UserService userService){
+    public UserController(UserService userService) {
         this.userService = userService;
     }
-//  POST
-    @PostMapping(consumes= MediaType.MULTIPART_FORM_DATA_VALUE)
+
+    //  POST
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponse> createUser(
             @Valid
             @RequestParam String name,
             @RequestParam String email,
             @RequestParam String password,
-            @RequestParam MultipartFile photo) throws IOException  {
+            @RequestParam MultipartFile photo) throws IOException {
         UserRequest userReq = new UserRequest(name, email, password, null);
         UserResponse userRes = userService.createUser(userReq, photo);
         URI location = URI.create("/users/" + userRes.id());
         return ResponseEntity.created(location).body(userRes);
     }
-//    GET
+
+    //    GET
     @GetMapping
-    public ResponseEntity<List<UserResponse>> showAllUsers(){
+    public ResponseEntity<List<UserResponse>> showAllUsers() {
         List<UserResponse> users = userService.showAllUsers();
         return ResponseEntity.ok(users);
     }
 
-//    PUT
-    @PutMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    //    PUT
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<UserResponse> updateUser(
             @Valid
             @PathVariable UUID id,
             @RequestParam String name,
             @RequestParam String password,
-            @RequestParam MultipartFile photo) throws IOException{
+            @RequestParam MultipartFile photo) throws IOException {
         UserRequest userReq = new UserRequest(name, null, password, null);
         UserResponse updatedUser = userService.updateUser(id, userReq, photo);
         return ResponseEntity.ok(updatedUser);
     }
+
+    //    DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(
+            @PathVariable UUID id,
+            @RequestParam boolean confirm) {
+        userService.deleteUser(id, confirm);
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
 }
