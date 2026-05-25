@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.URI;
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/users")
@@ -39,5 +40,18 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> showAllUsers(){
         List<UserResponse> users = userService.showAllUsers();
         return ResponseEntity.ok(users);
+    }
+
+//    PUT
+    @PutMapping(value = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<UserResponse> updateUser(
+            @Valid
+            @PathVariable UUID id,
+            @RequestParam String name,
+            @RequestParam String password,
+            @RequestParam MultipartFile photo) throws IOException{
+        UserRequest userReq = new UserRequest(name, null, password, null);
+        UserResponse updatedUser = userService.updateUser(id, userReq, photo);
+        return ResponseEntity.ok(updatedUser);
     }
 }
