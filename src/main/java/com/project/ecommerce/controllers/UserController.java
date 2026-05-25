@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -32,6 +33,11 @@ public class UserController {
         UserResponse userRes = userService.createUser(userReq, photo);
         URI location = URI.create("/users/" + userRes.id());
         return ResponseEntity.created(location).body(userRes);
-
+    }
+//    GET
+    @GetMapping
+    public ResponseEntity<List<UserResponse>> showAllUsers(){
+        List<UserResponse> users = userService.showAllUsers();
+        return ResponseEntity.ok(users);
     }
 }
