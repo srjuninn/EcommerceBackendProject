@@ -80,4 +80,23 @@ public class UserService {
 
         return new UserResponse(userToUpdate.getId(), userToUpdate.getName(), userToUpdate.getEmail());
     }
+    public void deleteUser(UUID id, boolean confirm) {
+        if (!confirm) {
+            throw new IllegalArgumentException("Confirmação necessária para deletar usuário");
+        }
+
+        String loggedEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        UserEntity loggedUser = userRepository.findByEmail(loggedEmail)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário autenticado não encontrado"));
+
+        if (!loggedUser.getId().equals(id) && !loggedUser.getRole().equals(RolesEnum.ROLE_ADMIN)) {
+            throw new AccessDeniedException("Você não pode deletar outro usuário");
+        }
+
+        UserEntity userToDelete = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+
+        userRepository.delete(userToDelete);
+    }
 }
